@@ -1,3 +1,19 @@
+<?php
+
+mysql_connect('localhost', 'root');
+mysql_select_db('snapchess');
+
+$currentTime = time();
+$fenQuery = mysql_query('SELECT * FROM `fen_history` WHERE `validThrough` > '.mysql_real_escape_string($currentTime).' ORDER BY `validThrough` DESC LIMIT 0,1');
+$fen = 'start';
+if(mysql_affected_rows() > 0){
+
+    $fenResult = mysql_fetch_assoc($fenQuery);
+    $fen = $fenResult['fen'];
+
+}
+
+?>
 <!DOCTYPE html>
 <html>
 
@@ -130,10 +146,14 @@
 
                         var newFEN = dataJSON['fen'];
 
-                        game.load(newFEN);
-                        board.position(newFEN);
+                        if(newFEN){
 
-                        waitingForServer = false;
+                            game.load(newFEN);
+                            board.position(newFEN);
+
+                            waitingForServer = false;
+
+                        }
 
                         listenForServerFENChanges(); // now we wait for the next time the server decides to change stuff
 
@@ -143,7 +163,7 @@
 
                 var cfg = {
                     draggable: true,
-                    position: 'start',
+                    position: '<?php echo $fen; ?>',
                     onDragStart: onDragStart,
                     onDrop: onDrop,
                     onSnapEnd: onSnapEnd

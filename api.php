@@ -30,12 +30,16 @@ if($action === 'ticker'){
 
     $newFEN = processVotes();
 
-    if(!$newFEN){ die(); }
+    // if(!$newFEN){ die(); }
 
     $response = []; // we will reply with the new FEN
     // $newFEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 
-    $response['fen'] = $newFEN;
+    if($newFEN){
+        $response['fen'] = $newFEN;
+    }else{
+        $response['continue'] = true;
+    }
 
     echo json_encode($response);
 
@@ -61,7 +65,7 @@ function processVotes(){
     // first, check if there's something that is currently not valid
 
     $currentTime = time();
-    $fenQuery = mysql_query('SELECT * FROM `fen_history` WHERE `validThrough` > '.mysql_real_escape_string($currentTime).' ORDER BY `validThrough` DESC ');
+    $fenQuery = mysql_query('SELECT * FROM `fen_history` WHERE `validThrough` > '.mysql_real_escape_string($currentTime).' ORDER BY `validThrough` DESC LIMIT 0,1 ');
     if(mysql_affected_rows() > 0){
 
         $fenResult = mysql_fetch_assoc($fenQuery);
@@ -71,18 +75,31 @@ function processVotes(){
 
     }
 
+    $modulus = $currentTime % WAIT_INTERVAL;
+    $rest = WAIT_INTERVAL - $modulus;
+    $validThrough = $currentTime + $rest;
+
     // otherwise, let's select the newest FEN and make it active
     $voteQuery = mysql_query('SELECT * FROM `votes` WHERE `isActive` = 1 GROUP BY `fen` ORDER BY COUNT(`fen`) DESC ');
     if(mysql_affected_rows() < 1){
+
+        // we need the latest id
+        $fenIDQuery = mysql_query('SELECT * FROM `fen_history` ORDER BY `validThrough` DESC LIMIT 0,1 ');
+        $fenIDResult = mysql_fetch_assoc($fenIDQuery);
+        $fenID = $fenIDResult['id'];
+
+        mysql_query('UPDATE `fen_history` SET `validThrough` = '.mysql_real_escape_string($validThrough).' WHERE `id` = '.mysql_real_escape_string($fenID).' ');
+
+        echo mysql_error();
+
         return false; // there are no votes
+
     }
 
     $mostVotedFEN = mysql_fetch_assoc($voteQuery);
     $fen = $mostVotedFEN['fen'];
 
-    $modulus = $currentTime % WAIT_INTERVAL;
-    $rest = WAIT_INTERVAL - $modulus;
-    $validThrough = $currentTime + $rest;
+
 
     mysql_query('INSERT INTO `fen_history` SET `fen` = "'.mysql_real_escape_string($fen).'", `validThrough` = '.mysql_real_escape_string($validThrough).' ');
     mysql_query('UPDATE `votes` SET `isActive` = 0 ');
