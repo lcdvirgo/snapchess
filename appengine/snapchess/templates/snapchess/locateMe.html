@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Geolocation Example</title>
+</head>
+
+<body id="home">
+
+    <h1>GPS Location</h1>
+    <p id="locateButton">Click below to get your coordinates:</p>
+    <button onclick="getLocation()">Find me!</button>
+
+    <script>
+    var x=document.getElementById("locateButton");
+    function getLocation()
+    {
+        if (navigator.geolocation)
+        {
+            navigator.geolocation.getCurrentPosition(showPosition);
+        }
+        else{x.innerHTML="Geolocation is not supported by this browser.";}
+    }
+
+    function showPosition(position)
+    {
+        x.innerHTML="Latitude: " + position.coords.latitude + 
+        "<br>Longitude: " + position.coords.longitude;	
+    }
+
+    function reverseGeocode()
+    {
+        // var revGeocodeResponse = <a href="http://sampleserver1.arcgisonline.com/ArcGIS/rest/services/Locators/ESRI_Geocode_USA/GeocodeServer/reverseGeocode?location=0%2C+0&distance=0&outSR=&f=pjson
+        x.innerHTML = x.innerHTML + "<br><br><b>state</b>;
+    }
+
+</script>
+
+</body>
+</html>
+
