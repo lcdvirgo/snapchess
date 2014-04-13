@@ -11,11 +11,19 @@
 
         $(document).ready(function () {
 
+            var newUniqueID = '<?php echo uniqid(); ?>';
+
             $('.school').click(function () {
 
                 var school = $(this).data('school');
 
                 sessionStorage['school'] = school;
+
+                var uniqueID = sessionStorage['unique_id'];
+                if(!uniqueID){
+                    uniqueID = newUniqueID;
+                    sessionStorage['unique_id'] = uniqueID;
+                }
 
                 location.href = 'game.php';
 

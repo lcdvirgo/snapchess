@@ -2,7 +2,7 @@
 
 // this servlet really doesn't do much at all
 
-
+date_default_timezone_set('CET');
 
 mysql_connect('localhost', 'snapchess', 'snapchess');
 mysql_select_db('snapchess');
@@ -18,7 +18,101 @@ if($action !== 'ticker'){
 
 }
 
-if($action === 'ticker'){
+if($action === 'ping'){
+
+    $uniqueID = $_GET['uniqueID'];
+    $school = $_GET['school'];
+
+    $firstUserCount = $_GET['userCount'];
+    $firstTeamMateCount = $_GET['teamMateCount'];
+
+    // let's see if the user is added
+
+    mysql_query('SELECT * FROM `users` WHERE `uniqueID` = "'.mysql_real_escape_string($uniqueID).'" ');
+    if(mysql_affected_rows() < 1){
+
+        mysql_query('INSERT INTO `users` SET `uniqueID` = "'.mysql_real_escape_string($uniqueID).'", `lastPing` = "'.mysql_real_escape_string(date('Y-m-d H:i:s')).'" ');
+
+    }
+
+    mysql_query('UPDATE `users` SET `school` = "'.mysql_real_escape_string($school).'" WHERE `uniqueID` = "'.mysql_real_escape_string($uniqueID).'" ');
+
+
+
+
+
+    ignore_user_abort(true); // we will handle the abort ourselves
+
+    define('UPDATE_CHECK_INTERVAL', 250 * 1000); // we will check that every 0.25 seconds
+    define('CONNECTION_ABORTION_CHECK_INTERVAL', 5 * 1000 * 1000); // we will check that every 5 seconds
+
+    // that way, less data is sent
+
+
+    $timeSinceLastConnectionAbortionCheck = 0;
+
+    while(true){
+
+        // $updateNecessary = $token->needsHeartbeatPush();
+
+        // let's delete the ones that are no longer present
+        mysql_query('DELETE FROM `users` WHERE `lastPing` < "'.mysql_real_escape_string(date('Y-m-d H:i:s', time() - CONNECTION_ABORTION_CHECK_INTERVAL / 1000000)).'" ');
+
+        // let's count the users
+        mysql_query('SELECT * FROM `users` ');
+        $userCount = mysql_affected_rows();
+
+        mysql_query('SELECT * FROM `users` WHERE `school` = "'.mysql_real_escape_string($school).'" ');
+        $teamMateCount = mysql_affected_rows();
+
+        $updateNecessary = (($userCount != $firstUserCount) || ($teamMateCount != $firstTeamMateCount));
+
+        if($updateNecessary){
+
+            $newData = [];
+            $newData['userCount'] = $userCount;
+            $newData['teamMateCount'] = $teamMateCount;
+            echo json_encode($newData);
+
+            ob_flush();
+            flush();
+
+            if(connection_aborted()){ die(); } // only works if doing output beforehand, it needs to verify the socket connectivity
+
+            die(); // since socket stuff does not work, we will just have the client reconnect every time there is something new
+
+        }
+
+
+
+        // we don't wanna check the connection and send some chunk of data every 0.25 seconds, so we do it every 5 seconds
+
+        if($timeSinceLastConnectionAbortionCheck >= CONNECTION_ABORTION_CHECK_INTERVAL){
+
+            $timeSinceLastConnectionAbortionCheck = 0;
+
+            // trying to do output so the next check works
+            echo ' ';
+            ob_flush();
+            flush();
+
+            if(connection_aborted()){ die(); } // only works if doing output beforehand, it needs to verify the socket connectivity
+
+            mysql_query('UPDATE `users` SET `lastPing` = "'.mysql_real_escape_string(date('Y-m-d H:i:s')).'" WHERE `uniqueID` = "'.mysql_real_escape_string($uniqueID).'" ');
+
+        }
+
+
+
+        // and now we sleep
+
+        usleep(UPDATE_CHECK_INTERVAL);
+
+        $timeSinceLastConnectionAbortionCheck += UPDATE_CHECK_INTERVAL;
+
+    }
+
+}else if($action === 'ticker'){
 
     // here we wait until we have accumulated enough votes
 

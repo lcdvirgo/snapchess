@@ -48,6 +48,8 @@ if(ACTIVE_SERVER){
                 location.href = 'index.html';
             }
 
+            var uniqueID = sessionStorage['unique_id'];
+
             var team;
             if(school == 'ucla'){
                 team = 'w';
@@ -205,6 +207,36 @@ if(ACTIVE_SERVER){
 
                 }
 
+                var userCount = 0;
+                var teamMateCount = 0;
+                var pingPresence = function(){
+
+                    var path = SERVER_API_ENDPOINT + 'action=ping&uniqueID='+uniqueID+'&school='+school+'&userCount='+userCount+'&teamMateCount='+teamMateCount;
+
+                    $.ajax({url: path, async: true, success:function(data){
+
+                        var dataJSON;
+
+                        try{
+                            dataJSON = JSON.parse(data.trim());
+                        }catch(e){
+                            return; // this didn't work out
+                        }
+
+                        if(!dataJSON){ return; } // JSON conversion has not worked
+
+                        userCount = dataJSON['userCount'];
+                        teamMateCount = dataJSON['teamMateCount'];
+
+                        $('#teamMates').text(teamMateCount);
+                        $('#userCount').text(userCount);
+
+                        pingPresence(); // now we wait for the next time the server decides to change stuff
+
+                    }});
+
+                }
+
                 var orientation = 'white';
                 if(team === 'b'){
                     orientation = 'black';
@@ -223,6 +255,8 @@ if(ACTIVE_SERVER){
                 log(JSON.stringify(cfg));
 
                 updateStatus();
+
+                pingPresence(); // tell the others we're there
 
                 <?php if(ACTIVE_SERVER){ ?>
                     listenForServerFENChanges();
@@ -261,6 +295,8 @@ if(ACTIVE_SERVER){
     <body>
 
         <div id="board" style="width: 400px;"></div>
+
+        <p>Team Mates: <span id="teamMates"></span> / <span id="userCount"></span> </p>
 
         <p>Status: <span id="status"></span></p>
 
