@@ -64,7 +64,7 @@ if(mysql_affected_rows() > 0){
 
                     if(waitingForServer){ return false; } // the player has just played their move
 
-                    alert(game.turn());
+                    // alert(game.turn());
 
                     if (game.game_over() === true ||
                             (game.turn() === 'w' && piece.search(/^b/) !== -1) ||
