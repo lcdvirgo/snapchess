@@ -34,6 +34,10 @@ if(ACTIVE_SERVER){
         <script type="text/javascript" src="apis/chessboard/js/chessboard-0.3.0.min.js"></script>
         <script type="text/javascript" src="apis/chessboard/js/chess.min.js"></script>
         <link rel="stylesheet" href="apis/chessboard/css/chessboard-0.3.0.min.css"/>
+        <link rel="stylesheet" href="css/style.css"/>
+        <link href='http://fonts.googleapis.com/css?family=Roboto:400,300,700' rel='stylesheet' type='text/css'>
+
+
 
         <noscript>
             <meta http-equiv="refresh" content="0;URL=index.html" />
@@ -63,8 +67,13 @@ if(ACTIVE_SERVER){
 
                 var waitingForServer = false;
 
+                var gameFEN = '<?php echo $fen; ?>';
+                var game = new Chess(gameFEN);
+                if(gameFEN === 'start'){
+                    game = new Chess();
+                }
+
                 var board,
-                        game = new Chess('<?php echo $fen; ?>'),
                         statusEl = $('#status'),
                         fenEl = $('#fen'),
                         pgnEl = $('#pgn');
@@ -317,7 +326,14 @@ if(ACTIVE_SERVER){
     </head>
 
     <body>
-
+    <br>
+    <br>
+    <div class="container marketing" id="school_selector">
+        <img src="assets/img/logo1.png" style="width:80px; margin-left: 30px;">
+        <img src="assets/img/logo5.png" style="width:200px; margin-left: 10px;">
+        <br>
+        <br>
+    </div>
         <p>Time Left: <span id="countdown"></span></p>
 
         <div id="board" style="width: 400px;"></div>

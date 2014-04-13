@@ -1,0 +1,25 @@
+body{
+    margin-left: auto;
+    margin-right: auto;
+    width: 400px;
+    background: url(http://getcharacters.com/assets/img/bg.jpg);
+    background-size: cover;
+    font-family: Roboto, arial, sans-serif;
+    font-size: 18px;
+    line-height: 20px;
+    color: #ffffff;
+}
+
+.black-3c85d {
+    background-color:transparent !important;
+    color:transparent !important;
+}
+
+.white-1e1d7 {
+    background-color: #ffffff !important;
+    color: #ffffff !important;
+}
+
+.board-b72b1 {
+    border: 2px solid #ffffff !important;
+}
