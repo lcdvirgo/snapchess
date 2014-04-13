@@ -3,13 +3,22 @@
 mysql_connect('localhost', 'snapchess', 'snapchess');
 mysql_select_db('snapchess');
 
-$currentTime = time();
-$fenQuery = mysql_query('SELECT * FROM `fen_history` WHERE `validThrough` > '.mysql_real_escape_string($currentTime).' ORDER BY `validThrough` DESC LIMIT 0,1');
-$fen = 'start';
-if(mysql_affected_rows() > 0){
+define('ACTIVE_SERVER', true);
+define('DEBUG_FEN', 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1');
 
-    $fenResult = mysql_fetch_assoc($fenQuery);
-    $fen = $fenResult['fen'];
+$fen = 'start';
+
+if(ACTIVE_SERVER){
+
+    $currentTime = time();
+    $fenQuery = mysql_query('SELECT * FROM `fen_history` WHERE `validThrough` > '.mysql_real_escape_string($currentTime).' ORDER BY `validThrough` DESC LIMIT 0,1');
+
+    if(mysql_affected_rows() > 0){
+
+        $fenResult = mysql_fetch_assoc($fenQuery);
+        $fen = $fenResult['fen'];
+
+    }
 
 }
 
@@ -53,7 +62,7 @@ if(mysql_affected_rows() > 0){
                 var waitingForServer = false;
 
                 var board,
-                        game = new Chess(),
+                        game = new Chess('<?php echo $fen; ?>'),
                         statusEl = $('#status'),
                         fenEl = $('#fen'),
                         pgnEl = $('#pgn');
@@ -64,17 +73,17 @@ if(mysql_affected_rows() > 0){
 
                     if(waitingForServer){ return false; } // the player has just played their move
 
-                    // alert(game.turn());
-
                     if (game.game_over() === true ||
                             (game.turn() === 'w' && piece.search(/^b/) !== -1) ||
                             (game.turn() === 'b' && piece.search(/^w/) !== -1)) {
                         return false;
                     }
 
-                    if(game.turn() !== team){
-                        return false; // we are not the team that is supposed to play this piece
-                    }
+                    <?php if(ACTIVE_SERVER){ ?>
+                        if(game.turn() !== team){
+                            return false; // we are not the team that is supposed to play this piece
+                        }
+                    <?php } ?>
 
                 };
 
@@ -90,7 +99,10 @@ if(mysql_affected_rows() > 0){
                     if (move === null) return 'snapback';
 
                     updateStatus();
-                    voteAndWait();
+
+                    <?php if(ACTIVE_SERVER){ ?>
+                        voteAndWait();
+                    <?php } ?>
 
                 };
 
@@ -132,7 +144,7 @@ if(mysql_affected_rows() > 0){
                     fenEl.html(game.fen());
                     pgnEl.html(game.pgn());
 
-
+                    log('FEN: '+game.fen());
 
                 };
 
@@ -175,8 +187,12 @@ if(mysql_affected_rows() > 0){
 
                         if(newFEN){
 
-                            game = new Chess(newFEN);
+                            // game = new Chess(newFEN);
                             board.position(newFEN);
+                            game.load(newFEN);
+
+                            updateStatus();
+
                             // board
 
                             // waitingForServer = false;
@@ -189,8 +205,14 @@ if(mysql_affected_rows() > 0){
 
                 }
 
+                var orientation = 'white';
+                if(team === 'b'){
+                    orientation = 'black';
+                }
+
                 var cfg = {
                     draggable: true,
+                    orientation: orientation,
                     position: '<?php echo $fen; ?>',
                     onDragStart: onDragStart,
                     onDrop: onDrop,
@@ -198,19 +220,26 @@ if(mysql_affected_rows() > 0){
                 };
                 board = new ChessBoard('board', cfg);
 
+                log(JSON.stringify(cfg));
+
                 updateStatus();
-                listenForServerFENChanges();
+
+                <?php if(ACTIVE_SERVER){ ?>
+                    listenForServerFENChanges();
+                <?php } ?>
 
 
 
 
                 $('#load_board_button').click(function(){
 
-                    var fen = 'rnbqkbnr/ppp1pppp/8/3p4/8/5P2/PPPPP1PP/RNBQKBNR w KQkq d6 0 2';
+                    var fen = '<?php echo DEBUG_FEN; ?>';
 
                     // game.load(fen);
-                    game = new Chess(fen);
                     board.position(fen);
+                    game.load(fen);
+
+                    updateStatus();
 
                 });
 
@@ -218,6 +247,12 @@ if(mysql_affected_rows() > 0){
 
 
             });
+
+            function log(text){
+
+                $('#log').html(text + '<br/><br/>' + $('#log').text());
+
+            }
 
         </script>
 
@@ -234,6 +269,8 @@ if(mysql_affected_rows() > 0){
         <p>PGN: <span id="pgn"></span></p>
 
         <input type="button" value="Test load board" id="load_board_button" />
+
+        <div id="log"></div>
 
     </body>
 
