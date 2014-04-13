@@ -100,11 +100,11 @@ if(ACTIVE_SERVER){
                     // illegal move
                     if (move === null) return 'snapback';
 
-                    updateStatus();
-
                     <?php if(ACTIVE_SERVER){ ?>
                         voteAndWait();
                     <?php } ?>
+
+                    updateStatus();
 
                 };
 
@@ -122,6 +122,8 @@ if(ACTIVE_SERVER){
                         moveColor = 'Black';
                     }
 
+
+
                     // checkmate?
                     if (game.in_checkmate() === true) {
                         status = 'Game over, ' + moveColor + ' is in checkmate.';
@@ -134,12 +136,34 @@ if(ACTIVE_SERVER){
 
                     // game still on
                     else {
-                        status = moveColor + ' to move';
+
+                        // status = moveColor + ' to move';
+
+                        if(game.turn() == team){
+                            status = 'It\'s your turn.';
+                        }else{
+                            status = 'It\'s their turn.';
+                        }
 
                         // check?
                         if (game.in_check() === true) {
-                            status += ', ' + moveColor + ' is in check';
+
+                            if(game.turn() == team){
+                                status = 'You are in check.';
+                            }else{
+                                status = 'They are in check.';
+                            }
+
+                            // status += ', ' + moveColor + ' is in check';
+
                         }
+
+                        if(waitingForServer){
+
+                            status = 'Your vote is being processed. '+status;
+
+                        }
+
                     }
 
                     statusEl.html(status);
@@ -294,19 +318,25 @@ if(ACTIVE_SERVER){
 
     <body>
 
-        <div id="board" style="width: 400px;"></div>
+        <p>Time Left: <span id="countdown"></span></p>
 
-        <p>Team Mates: <span id="teamMates"></span> / <span id="userCount"></span> </p>
+        <div id="board" style="width: 400px;"></div>
 
         <p>Status: <span id="status"></span></p>
 
-        <p>FEN: <span id="fen"></span></p>
+        <p>Team Mates: <span id="teamMates"></span> / <span id="userCount"></span> </p>
 
-        <p>PGN: <span id="pgn"></span></p>
+        <div style="display: none;">
 
-        <input type="button" value="Test load board" id="load_board_button" />
+            <p>FEN: <span id="fen"></span></p>
 
-        <div id="log"></div>
+            <p>PGN: <span id="pgn"></span></p>
+
+            <input type="button" value="Test load board" id="load_board_button" />
+
+            <div id="log"></div>
+
+        </div>
 
     </body>
 
