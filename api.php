@@ -4,7 +4,7 @@
 
 
 
-mysql_connect('localhost', 'root');
+mysql_connect('localhost', 'snapchess', 'snapchess');
 mysql_select_db('snapchess');
 
 const WAIT_INTERVAL = 10; // in seconds
