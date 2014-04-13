@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Snapchess</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+
+    <script type="text/javascript">
+
+        $(document).ready(function(){
+
+            $('.school').click(function(){
+
+                var school = $(this).data('school');
+
+                sessionStorage['school'] = school;
+
+                location.href = 'game.php';
+
+                // alert(school);
+
+            });
+
+        });
+
+    </script>
+
+</head>
+<body>
+
+    <div id="school_selector">
+
+        <div class="school" data-school="ucla" id="school_1">UCLA</div>
+        <div class="school" data-school="usc" id="school_2">USC</div>
+
+    </div>
+
+</body>
+</html>

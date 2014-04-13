@@ -19,18 +19,36 @@ if(mysql_affected_rows() > 0){
 
     <head>
 
-        <title>test</title>
+        <title>Snapchess</title>
 
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
         <script type="text/javascript" src="apis/chessboard/js/chessboard-0.3.0.min.js"></script>
         <script type="text/javascript" src="apis/chessboard/js/chess.min.js"></script>
         <link rel="stylesheet" href="apis/chessboard/css/chessboard-0.3.0.min.css"/>
 
+        <noscript>
+            <meta http-equiv="refresh" content="0;URL=index.html" />
+        </noscript>
+
         <script type="text/javascript">
 
             SERVER_API_ENDPOINT = 'api.php?';
 
+            var school = sessionStorage['school'];
+            if(!school){
+                location.href = 'index.html';
+            }
+
+            var team;
+            if(school == 'ucla'){
+                team = 'w';
+            }else if(school == 'usc'){
+                team = 'b';
+            }
+
             $(document).ready(function () {
+
+                // alert(JSON.stringify(sessionStorage));
 
                 var waitingForServer = false;
 
@@ -46,11 +64,18 @@ if(mysql_affected_rows() > 0){
 
                     if(waitingForServer){ return false; } // the player has just played their move
 
+                    alert(game.turn());
+
                     if (game.game_over() === true ||
                             (game.turn() === 'w' && piece.search(/^b/) !== -1) ||
                             (game.turn() === 'b' && piece.search(/^w/) !== -1)) {
                         return false;
                     }
+
+                    if(game.turn() !== team){
+                        return false; // we are not the team that is supposed to play this piece
+                    }
+
                 };
 
                 var onDrop = function (source, target) {
@@ -65,7 +90,7 @@ if(mysql_affected_rows() > 0){
                     if (move === null) return 'snapback';
 
                     updateStatus();
-                    voteAndWait();
+                    // voteAndWait();
 
                 };
 
@@ -144,14 +169,17 @@ if(mysql_affected_rows() > 0){
 
                         if(!dataJSON){ return; } // JSON conversion has not worked
 
+                        waitingForServer = false;
+
                         var newFEN = dataJSON['fen'];
 
                         if(newFEN){
 
-                            game.load(newFEN);
+                            game = new Chess(newFEN);
                             board.position(newFEN);
+                            // board
 
-                            waitingForServer = false;
+                            // waitingForServer = false;
 
                         }
 
@@ -176,6 +204,18 @@ if(mysql_affected_rows() > 0){
 
 
 
+                $('#load_board_button').click(function(){
+
+                    var fen = 'rnbqkbnr/ppp1pppp/8/3p4/8/5P2/PPPPP1PP/RNBQKBNR w KQkq d6 0 2';
+
+                    // game.load(fen);
+                    game = new Chess(fen);
+                    board.position(fen);
+
+                });
+
+
+
 
             });
 
@@ -192,6 +232,8 @@ if(mysql_affected_rows() > 0){
         <p>FEN: <span id="fen"></span></p>
 
         <p>PGN: <span id="pgn"></span></p>
+
+        <input type="button" value="Test load board" id="load_board_button" />
 
     </body>
 
