@@ -37,7 +37,7 @@ if(ACTIVE_SERVER){
         <link rel="stylesheet" href="css/style.css"/>
         <link href='http://fonts.googleapis.com/css?family=Roboto:400,300,700' rel='stylesheet' type='text/css'>
 
-
+        <script src="http://www.mattboldt.com/demos/typed-js/js/typed.custom.js"></script>
 
         <noscript>
             <meta http-equiv="refresh" content="0;URL=index.html" />
@@ -64,6 +64,25 @@ if(ACTIVE_SERVER){
             $(document).ready(function () {
 
                 // alert(JSON.stringify(sessionStorage));
+
+
+
+                var strings = [];
+                if(school === 'ucla'){
+                    strings = ['You\'re UCLA & alliance.', 'Welcome to the Bright side!', 'Start playing!'];
+                }else if(school === 'usc'){
+                    strings = ['You\'re USC & alliance.', 'Welcome to the Dark side!', 'Start playing!'];
+                }
+
+                $("#typed").typed({
+                    strings: strings,
+                    // strings: ["You're USC & alliance.", "Welcomo", "Welcome to the Dark side!", "Start Playing!"],
+                    typeSpeed: 30
+                });
+
+
+
+
 
 
                 var waitingForServer = false;
@@ -353,6 +372,9 @@ if(ACTIVE_SERVER){
         <img src="assets/img/logo5.png" style="width:200px; margin-left: 10px;">
         <br>
         <br>
+        <div class="text-body">
+            <h2><span id="typed"></span></h2>
+        </div>
     </div>
         <p style="display: none;">Time Left: <span id="countdown"></span></p>
 
