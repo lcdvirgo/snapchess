@@ -65,6 +65,7 @@ if(ACTIVE_SERVER){
 
                 // alert(JSON.stringify(sessionStorage));
 
+
                 var waitingForServer = false;
 
                 var gameFEN = '<?php echo $fen; ?>';
@@ -108,6 +109,8 @@ if(ACTIVE_SERVER){
 
                     // illegal move
                     if (move === null) return 'snapback';
+
+                    updateStatus();
 
                     <?php if(ACTIVE_SERVER){ ?>
                         voteAndWait();
@@ -192,7 +195,11 @@ if(ACTIVE_SERVER){
                     var currentFEN = game.fen();
                     var path = SERVER_API_ENDPOINT + 'action=vote&fen='+encodeURIComponent(currentFEN);
 
+                    // alert('path, motherfucker! '+path);
+
                     $.ajax({url: path, async: true, success:function(data){
+
+
 
                         // alert('the FEN has just been voted for!');
 
@@ -270,6 +277,19 @@ if(ACTIVE_SERVER){
 
                 }
 
+                var updateCountdown = function(){
+
+                    var timestamp = Math.round(new Date().getTime() / 1000);
+                    var modulus = timestamp % 10;
+                    var remainingTime = 10 - modulus;
+
+                    $('#countdown').text(remainingTime + ' seconds');
+                    setTimeout('updateCountdown()', 1000);
+
+                }
+
+                updateCountdown();
+
                 var orientation = 'white';
                 if(team === 'b'){
                     orientation = 'black';
@@ -334,7 +354,7 @@ if(ACTIVE_SERVER){
         <br>
         <br>
     </div>
-        <p>Time Left: <span id="countdown"></span></p>
+        <p style="display: none;">Time Left: <span id="countdown"></span></p>
 
         <div id="board" style="width: 400px;"></div>
 

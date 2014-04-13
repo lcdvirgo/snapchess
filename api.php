@@ -12,7 +12,7 @@ const WAIT_INTERVAL = 10; // in seconds
 
 $action = $_GET['action'];
 
-if($action !== 'ticker'){
+if($action !== 'ticker' && $action !== 'ping'){
 
     session_start(); // we can't start the session for the ticker because that would make the sleep blocking
 
@@ -56,14 +56,14 @@ if($action === 'ping'){
         // $updateNecessary = $token->needsHeartbeatPush();
 
         // let's delete the ones that are no longer present
-        mysql_query('DELETE FROM `users` WHERE `lastPing` < "'.mysql_real_escape_string(date('Y-m-d H:i:s', time() - CONNECTION_ABORTION_CHECK_INTERVAL / 1000000)).'" ');
+        mysql_query('DELETE FROM `users` WHERE `lastPing` < "'.mysql_real_escape_string(date('Y-m-d H:i:s', time() - 2 * CONNECTION_ABORTION_CHECK_INTERVAL / 1000000)).'" ');
 
         // let's count the users
         mysql_query('SELECT * FROM `users` ');
-        $userCount = mysql_affected_rows();
+        $userCount = max(1, mysql_affected_rows());
 
         mysql_query('SELECT * FROM `users` WHERE `school` = "'.mysql_real_escape_string($school).'" ');
-        $teamMateCount = mysql_affected_rows();
+        $teamMateCount = max(1, mysql_affected_rows());
 
         $updateNecessary = (($userCount != $firstUserCount) || ($teamMateCount != $firstTeamMateCount));
 
