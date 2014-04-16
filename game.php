@@ -38,7 +38,7 @@ if(ACTIVE_SERVER){
         <link href='http://fonts.googleapis.com/css?family=Roboto:400,300,700' rel='stylesheet' type='text/css'>
 
         <script src="http://www.mattboldt.com/demos/typed-js/js/typed.custom.js"></script>
-
+        <link href="http://daneden.github.io/animate.css/animate.min.css" rel="stylesheet">
         <noscript>
             <meta http-equiv="refresh" content="0;URL=index.html" />
         </noscript>
@@ -65,11 +65,14 @@ if(ACTIVE_SERVER){
 
                 // alert(JSON.stringify(sessionStorage));
 
+                setTimeout(function () {
+                        $('#board').show().addClass('animated fadeInUp');}, 800
 
+                );
 
                 var strings = [];
                 if(school === 'ucla'){
-                    strings = ['You\'re UCLA & alliance.', 'Welcome to the Bright side!', 'Start playing!'];
+                    strings = ['You\'re UCLA & alliance.', 'Bear rocks!', 'Start playing!'];
                 }else if(school === 'usc'){
                     strings = ['You\'re USC & alliance.', 'Welcome to the Dark side!', 'Start playing!'];
                 }
@@ -77,7 +80,7 @@ if(ACTIVE_SERVER){
                 $("#typed").typed({
                     strings: strings,
                     // strings: ["You're USC & alliance.", "Welcomo", "Welcome to the Dark side!", "Start Playing!"],
-                    typeSpeed: 30
+                    typeSpeed: 20
                 });
 
 
@@ -368,8 +371,8 @@ if(ACTIVE_SERVER){
     <br>
     <br>
     <div class="container marketing" id="school_selector">
-        <img src="assets/img/logo1.png" style="width:80px; margin-left: 30px;">
-        <img src="assets/img/logo5.png" style="width:200px; margin-left: 10px;">
+        <img class="animated fadeInUp" src="assets/img/logo1.png" style="width:80px; margin-left: 30px;">
+        <img class="animated fadeInUp" src="assets/img/logo5.png" style="width:200px; margin-left: 10px;">
         <br>
         <br>
         <div class="text-body">
@@ -378,7 +381,7 @@ if(ACTIVE_SERVER){
     </div>
         <p style="display: none;">Time Left: <span id="countdown"></span></p>
 
-        <div id="board" style="width: 400px;"></div>
+        <div id="board" style="width: 400px; display:none;" class="animated fadeInUp"></div>
 
         <p>Status: <span id="status"></span></p>
 

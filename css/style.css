@@ -8,6 +8,7 @@ body{
     font-size: 18px;
     line-height: 20px;
     color: #ffffff;
+    background-repeat: no-repeat;
 }
 
 .black-3c85d {
@@ -22,4 +23,8 @@ body{
 
 .board-b72b1 {
     border: 2px solid #ffffff !important;
+}
+
+@media (min-width: 1200px) {
+
 }

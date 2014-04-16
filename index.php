@@ -10,7 +10,13 @@
     <script type="text/javascript">
 
         $(document).ready(function () {
+            setTimeout(function () {
+                    $('.span-ucla').show().addClass('animated fadeInUp');}, 800
 
+            );
+            setTimeout(function () {
+                    $('.span-usc').show().addClass('animated fadeInUp');}, 1100
+            );
             var newUniqueID = '<?php echo uniqid(); ?>';
 
             $('.school').click(function () {
@@ -44,12 +50,14 @@
     <link href='http://fonts.googleapis.com/css?family=Roboto:400,300,700' rel='stylesheet' type='text/css'>
     <link href="assets/css/bootplus.css" rel="stylesheet">
     <link href="assets/css/bootplus-responsive.css" rel="stylesheet">
+    <link href="http://daneden.github.io/animate.css/animate.min.css" rel="stylesheet">
     <style type="text/css">
         body {
             padding-top: 46px;
             padding-bottom: 40px;
             background: url(http://getcharacters.com/assets/img/bg.jpg);
             background-size: cover;
+            background-repeat: no-repeat;
         }
 
         .hero-unit h1 {
@@ -128,6 +136,7 @@
             font-size: 15px !important;
         }
 
+
         @keyframes "noiseSlide" {
             from {
                 background-position: 0px 0px;
@@ -194,6 +203,7 @@
         @media (min-width: 1200px) {
             div.container.marketing {
                 width: 800px !important;
+                height: 1500px !important;
             }
 
             .container,
@@ -225,11 +235,13 @@
 <!-- UCLA -->
 
 <div class="container marketing" id="school_selector">
+    <div class="animated fadeInUp">
     <img src="assets/img/logo1.png" style="width:80px; margin-left: 30px;">
     <img src="assets/img/logo5.png" style="width:200px; margin-left: 10px;">
+    </div>
     <br>
     <br>
-    <div class="span4">
+    <div class="span4 animated fadeInUp span-ucla" style="display:none;">
         <div class="card people school" data-school="ucla" id="school_1">
             <div class="card-top green">
                 <a href="#">
@@ -248,7 +260,7 @@
         </div>
     </div>
 
-    <div class="span4">
+    <div class="span4 animated fadeInUp span-usc" style="display:none;">
         <!-- USC -->
         <div class="card people school" data-school="usc" id="school_2">
             <div class="card-top green">
